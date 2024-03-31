@@ -11,15 +11,21 @@ Prerequisites:
 Install TypstPowerShell:
 - Use your preferred Vim plugin manager (e.g., vim-plug).
 - Add the following line to your ~/.vimrc or vimrc:
+        <pre>
         Plug 'sevehub/typstpowershell' and run :PlugInstall to initialize the plugin.
+        </pre>
   Set the PDFViewer path/exe name:
+        <pre>
         let g:pdf_viewer = 'SumatraPDF.exe' ""legacy
         g:pdf_viewer = 'SumatraPDF.exe' #vim9script
+        </pre>
 Creating PDFs:
 - Open your Typst source code in Vim.
-- Execute the TypstPDF command (e.g., :TypstPDFCompile).
-- Your PDF will be generated using Typst.
+- Execute the TypstCompile command (e.g., :TypstCompile).
+- Your PDF will be generated using Typst and previewed in your PDFViewer.
 
+
+TODO:
 
 []  Documentation
 []  Complete  Vim-Doc
