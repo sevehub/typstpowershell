@@ -19,11 +19,18 @@ Install TypstPowerShell:
         let g:pdf_viewer = 'SumatraPDF.exe' ""legacy
         g:pdf_viewer = 'SumatraPDF.exe' #vim9script
         </pre>
+
 Creating PDFs:
 - Open your Typst source code in Vim.
 - Execute the TypstCompile command (e.g., :TypstCompile).
 - Your PDF will be generated using Typst and previewed in your PDFViewer.
 
+Display Fonts:
+- Execute TypstFonts command (:TypstFonts)
+
+Open PDFViewer:
+- :PDFViewer
+You can pin the PDFViwer with the keyboard shortcut CTRL-SHIFT-SPACE (Windows only)
 
 TODO:
 
