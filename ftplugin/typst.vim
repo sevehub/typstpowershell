@@ -11,7 +11,7 @@ endif
 set shell=powershell
 set shellcmdflag=-command
 var typst_exe = "typst.exe"
-var pdf_viewer = "SumatraPDF.exe"
+var pdf_viewer = "" # 
 var plugindir =  expand('<sfile>:p:h')
 var id = 0 
 
@@ -37,29 +37,43 @@ command -nargs=0 TypstFonts TypstFonts()
 augroup typstpowershell
   # Remove all vimrc autocommands
   autocmd!
-  au BufWrite <buffer> :TypstCompile
-  au BufEnter <buffer> :TypstCompile
+  au BufNew <buffer> :echom "New Typst Source File"
+  if pdf_viewer == ''
+      au BufWrite <buffer> :TypstWatch
+  else
+      au BufWrite <buffer> :TypstCompile
+  endif 
 augroup END
-
-
 
 def PDFViewer(): void
     var proj_dir = getcwd()
     var curr_pdf =  proj_dir .. "\\" .. expand("%:r") .. ".pdf"
-    id = term_start([pdf_viewer, curr_pdf], {"hidden": true, "stoponexit": true, "term_finish": "close"})
+    if pdf_viewer == ''
+        echom 'No PDF Viewer Defined'
+        execute("!" .. curr_pdf)
+        id = 1
+    else
+        id = term_start([pdf_viewer, curr_pdf], {"hidden": true, "stoponexit": true, "term_finish": "close", "err_cb": function('ErrPDFViwer')})
+    endif
 enddef    
 
 def TypstCompile(): void
     var proj_dir = getcwd()
     var curr_buff =  proj_dir .. "\\" .. expand("%")
-    if id == 0
-        PDFViewer()
-    endif
     job_start([typst_exe, "compile", curr_buff], {
                 \ out_cb: function('TypstOutput'),
                 \ err_cb: function('TypstError'),
+                \ exit_cb: execute('OpenPDFViewer()')
                 \ })
 enddef
+
+def OpenPDFViewer(): void
+ if id == 0
+    PDFViewer()
+ endif
+enddef
+
+
 
 def TypstWatch(): void
     var proj_dir = getcwd()
@@ -81,6 +95,10 @@ def FontsBuffer(ch: channel ): void
     while ch_status(ch, {'part': 'out'}) == 'buffered'
 	    call append(line("$") - 1, "- " .. ch_read(ch))
     endwhile
+enddef
+
+def ErrPDFViwer(ch: channel, msg: string): void
+    execute("TypstWatch()")
 enddef
 
 def TypstError(ch: channel, msg: string): void
