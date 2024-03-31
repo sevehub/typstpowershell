@@ -100,6 +100,8 @@ def TypstClose(ch: channel): void
                     \ pos: 'topleft', time: 4000
                     \ })
         errom = ''
+    else
+        execute('PDFViewer()')
     endif
 enddef
 
