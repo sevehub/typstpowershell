@@ -12,8 +12,9 @@ Install TypstPowerShell:
 - Use your preferred Vim plugin manager (e.g., vim-plug).
 - Add the following line to your ~/.vimrc or vimrc:
         <pre>
-        Plug 'sevehub/typstpowershell' and run :PlugInstall to initialize the plugin.
+        Plug 'sevehub/typstpowershell' 
         </pre>
+  and then run :PlugInstall to initialize the plugin.
   Set the PDFViewer path/exe name:
         <pre>
         let g:pdf_viewer = 'SumatraPDF.exe' ""legacy
@@ -30,6 +31,7 @@ Display Fonts:
 
 Open PDFViewer:
 - :PDFViewer
+
 You can pin the PDFViwer with the keyboard shortcut CTRL-SHIFT-SPACE (Windows only)
 
 TODO:
