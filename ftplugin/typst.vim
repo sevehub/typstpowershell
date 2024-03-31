@@ -13,7 +13,8 @@ set shellcmdflag=-command
 var typst_exe = "typst.exe"
 var pdf_viewer = "" # 
 var plugindir =  expand('<sfile>:p:h')
-var id = 0 
+var id = 0
+var errom = ""
 
 if has('win32') || has('win64')
     var pintotop = plugindir .. "\\" .. "pintotop.exe"
@@ -49,11 +50,10 @@ def PDFViewer(): void
     var proj_dir = getcwd()
     var curr_pdf =  proj_dir .. "\\" .. expand("%:r") .. ".pdf"
     if pdf_viewer == ''
-        echom 'No PDF Viewer Defined'
         execute("!" .. curr_pdf)
         id = 1
     else
-        id = term_start([pdf_viewer, curr_pdf], {"hidden": true, "stoponexit": true, "term_finish": "close", "err_cb": function('ErrPDFViwer')})
+        id = term_start([pdf_viewer, curr_pdf], {"hidden": true, "stoponexit": true, "term_finish": "close"})
     endif
 enddef    
 
@@ -63,22 +63,18 @@ def TypstCompile(): void
     job_start([typst_exe, "compile", curr_buff], {
                 \ out_cb: function('TypstOutput'),
                 \ err_cb: function('TypstError'),
-                \ exit_cb: execute('OpenPDFViewer()')
+                \ close_cb: function('TypstClose'), 
                 \ })
 enddef
-
-def OpenPDFViewer(): void
- if id == 0
-    PDFViewer()
- endif
-enddef
-
 
 
 def TypstWatch(): void
     var proj_dir = getcwd()
     var curr_buff =  proj_dir .. "\\" .. expand("%")
-    job_start([typst_exe, "watch", curr_buff])
+    job_start([typst_exe, "watch", curr_buff], {
+                \ out_cb: function('TypstOutput'),
+                \ err_cb: function('TypstError'),
+                \ })
 enddef
 
 def TypstFonts(): void
@@ -97,14 +93,18 @@ def FontsBuffer(ch: channel ): void
     endwhile
 enddef
 
-def ErrPDFViwer(ch: channel, msg: string): void
-    execute("TypstWatch()")
+
+def TypstClose(ch: channel): void
+    if errom != ''
+        popup_notification(split(errom, "&&"), {
+                    \ pos: 'topleft', time: 4000
+                    \ })
+        errom = ''
+    endif
 enddef
 
 def TypstError(ch: channel, msg: string): void
-    popup_notification(msg, {
-           \ pos: 'topleft', time: 4000
-           \ })
+    errom = errom .. '&&' ..  msg
 enddef
 
 def TypstOutput(ch: channel, msg: string): void
