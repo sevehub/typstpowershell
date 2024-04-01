@@ -6,6 +6,7 @@ This Vim9Script plugin is designed to streamline the process of compiling Typst 
 Prerequisites:
 - Vim (>9.0) installed on your system.
 - PowerShell available.
+- Typst binary https://github.com/typst/typst/releases
 - A PDFViewer (SumatraPDF/Evince recommended)
 
 Install TypstPowerShell:
@@ -15,15 +16,19 @@ Install TypstPowerShell:
         Plug 'sevehub/typstpowershell' 
         </pre>
   and then run :PlugInstall to initialize the plugin.
-  Set the PDFViewer path/exe name:
+  Set PDFViewer's path (optional, required when different from default application):
         <pre>
         let g:pdf_viewer = 'SumatraPDF.exe' ""legacy
         g:pdf_viewer = 'SumatraPDF.exe' #vim9script
         </pre>
-
+  Set Typst's path (optional, when not included in the PATH variable):
+        <pre>
+        let g:typst_exe = 'typst.exe' ""legacy
+        g: = 'SumatraPDF.exe' #vim9script
+        </pre>
 Creating PDFs:
 - Open your Typst source code in Vim.
-- Execute the TypstCompile command (e.g., :TypstCompile).
+- Execute the TypstCompile command (e.g., :TypstCompile) or save it.
 - Your PDF will be generated using Typst and previewed in your PDFViewer.
 
 Display Fonts:
@@ -32,7 +37,7 @@ Display Fonts:
 Open PDFViewer:
 - :PDFViewer
 
-You can pin the PDFViwer with the keyboard shortcut CTRL-SHIFT-SPACE (Windows only)
+You can pin the PDFViwer with the keyboard shortcut CTRL-SHIFT-SPACE (Windows only).
 
 TODO:
 
