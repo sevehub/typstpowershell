@@ -68,9 +68,12 @@ augroup typstpowershell
 augroup END
 
 def PDFViewer(): void
-    var proj_dir = getcwd()
-    var curr_pdf =  proj_dir .. "\\" .. expand("%:r") .. ".pdf"
-    if filereadable(curr_pdf)
+    var checkbufferpath = systemlist(plugindir  .. "\\getpathinfo.ps1 -Path " .. expand("%:p"))
+    var directory = checkbufferpath[0]
+    var filename = checkbufferpath[4]
+    var error = checkbufferpath[2]
+    if error == ""
+        var curr_pdf =  directory .. "\\" .. filename .. ".pdf"
         if typst_pdf_viewer == ''
             execute("!" .. curr_pdf)
             id = 1
