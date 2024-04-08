@@ -18,17 +18,22 @@ Install TypstPowerShell:
   and then run :PlugInstall to initialize the plugin.
   Set PDFViewer's path (optional, required when different from default application):
         <pre>
-        let g:pdf_viewer = 'SumatraPDF.exe' ""legacy
-        g:pdf_viewer = 'SumatraPDF.exe' #vim9script
+        let g:typst_pdf_viewer = 'SumatraPDF.exe' ""legacy
+        g:typst_pdf_viewer = 'SumatraPDF.exe' #vim9script
         </pre>
   Set Typst's path (optional, when not included in the PATH variable):
         <pre>
         let g:typst_exe = 'typst.exe' ""legacy
         g: = 'SumatraPDF.exe' #vim9script
         </pre>
+  Set the PowerShell's version if > 5:
+        <pre>
+        let g:powershell_version = 7 ""legacy
+        g:powershell_version = 7 #vim9script
+        </pre>
 Creating PDFs:
 - Open your Typst source code in Vim.
-- Execute the TypstCompile command (e.g., :TypstCompile) or save it.
+- Execute the PSTypstCompile command (e.g., :PSTypstCompile) or save it.
 - Your PDF will be generated using Typst and previewed in your PDFViewer.
 
 Display Fonts:
@@ -44,4 +49,4 @@ TODO:
 []  Documentation
 []  Complete  Vim-Doc
 
-### PR welcomed
+### PRs welcomed
