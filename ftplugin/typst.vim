@@ -25,11 +25,14 @@ if exists('g:typst_pdf_viewer')
    typst_pdf_viewer = g:typst_pdf_viewer
 endif
 
+
+
 # Powershell version 
 # use pwsh.exe for version 6,7
 if powershell_version < 6
     set shell=powershell.exe  
-    set shellcmdflag=-Command
+    set shellcmdflag=\ -ExecutionPolicy\ Bypass\ -NonInteractive\ -NoLogo\ -C
+
 else 
     set shell=pwsh.exe  
     set shellcmdflag=-Command
@@ -40,32 +43,48 @@ var id = 0
 var errom = ""
 var sysout = ""
 var typstfiles = []
+var  quickfixlist = [] 
 
 if has('win32') || has('win64')
     var pintotop = plugindir .. "\\" .. "pintotop.exe"
-    var powerutils =  plugindir .. "\\" .. "powerutils.ps1"
+    # TODO  read the current buffer and extract typst files unfinished 
+    # var getarglist =  plugindir .. "\\" .. "getarglist.ps1 -Filename " .. expand("%:p")
     system(pintotop)
-    # typstfiles = systemlist(powerutils)
-    # execute("argadd " .. join(typstfiles, " "))
+    # typstfiles = systemlist(getarglist)
+    # echom typstfiles
+    #execute("argadd " .. join(typstfiles, " "))
 endif
 
 
 
-command -nargs=0 PSTypstCompile PSTypstCompile()
-command -nargs=0 PSTypstWatch PSTypstWatch()
+command -nargs=0 TypstCompile TypstCompile()
+command -nargs=0 TypstWatch TypstWatch()
 command -nargs=0 PDFViewer PDFViewer()
 command -nargs=0 TypstFonts TypstFonts()
+command -nargs=0 TypstQFList TypstQFList()
 
 augroup typstpowershell
   # Remove all vimrc autocommands
   autocmd!
   au BufNew <buffer> :echom "New Typst Source File"
   if typst_pdf_viewer == ''
-      au BufWrite <buffer> :PSTypstWatch
+      au BufWrite <buffer> :TypstWatch
   else
-      au BufWrite <buffer> :PSTypstCompile
+      au BufWrite <buffer> :TypstCompile
   endif 
 augroup END
+
+def TypstQFList(): void
+    var proj_dir = getcwd()
+    var curr_buff =  proj_dir .. "\\" .. expand("%")
+    quickfixlist = systemlist(typst_exe .. " compile --diagnostic-format 'short' " .. curr_buff)
+    if quickfixlist->len() > 0
+            call setqflist([], ' ', {'title': 'List of Errors', 'lines': quickfixlist })
+        copen
+    endif
+   
+enddef
+
 
 def PDFViewer(): void
     var checkbufferpath = systemlist(plugindir  .. "\\getpathinfo.ps1 -Path " .. expand("%:p"))
@@ -83,7 +102,7 @@ def PDFViewer(): void
     endif
 enddef    
 
-def PSTypstCompile(): void
+def TypstCompile(): void
     var checkbufferpath = systemlist(plugindir  .. "\\getpathinfo.ps1 -Path " .. expand("%:p"))
     # echom checkbufferpath # list with Directory - Filename - Error
 
@@ -103,7 +122,7 @@ def PSTypstCompile(): void
 enddef
 
 
-def PSTypstWatch(): void
+def TypstWatch(): void
     var proj_dir = getcwd()
     var curr_buff =  proj_dir .. "\\" .. expand("%")
     job_start([typst_exe, "watch", curr_buff], {
