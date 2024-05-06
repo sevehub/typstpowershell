@@ -40,7 +40,7 @@ Display Fonts:
 - Execute TypstFonts command (:TypstFonts)
 
 View Errors in a quikfix list:
-:TysptQFList
+- :TypstQFList
 
 Open PDFViewer:
 - :PDFViewer
