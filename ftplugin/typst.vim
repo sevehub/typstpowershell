@@ -9,6 +9,9 @@ if v:version < 900
     finish
 endif
 
+import autoload "../autoload/run_psscript.vim"
+import autoload "../autoload/utils.vim"
+
 var typst_exe = "typst.exe"
 var typst_pdf_viewer = "" # same as typst.vim plugin
 var powershell_version = 5
@@ -25,37 +28,25 @@ if exists('g:typst_pdf_viewer')
    typst_pdf_viewer = g:typst_pdf_viewer
 endif
 
-
-
-# Powershell version 
-# use pwsh.exe for version 6,7
-if powershell_version < 6
-    set shell=powershell.exe  
-    set shellcmdflag=\ -ExecutionPolicy\ Bypass\ -NonInteractive\ -NoLogo\ -C
-
-else 
-    set shell=pwsh.exe  
-    set shellcmdflag=-Command
-endif
+var powershellcommand = run_psscript.Create_PS_Command(powershell_version)
 
 var plugindir =  expand('<sfile>:p:h')
 var id = 0
 var errom = ""
-var sysout = ""
 var typstfiles = []
-var  quickfixlist = [] 
+
+var watchmode = false
 
 if has('win32') || has('win64')
-    var pintotop = plugindir .. "\\" .. "pintotop.exe"
+    var pintotop = "start /B " .. plugindir .. "\\" .. "pintotop.exe"
+    system(pintotop)
+
     # TODO  read the current buffer and extract typst files unfinished 
     # var getarglist =  plugindir .. "\\" .. "getarglist.ps1 -Filename " .. expand("%:p")
-    system(pintotop)
     # typstfiles = systemlist(getarglist)
     # echom typstfiles
-    #execute("argadd " .. join(typstfiles, " "))
+    # execute("argadd " .. join(typstfiles, " "))
 endif
-
-
 
 command -nargs=0 TypstCompile TypstCompile()
 command -nargs=0 TypstWatch TypstWatch()
@@ -64,35 +55,31 @@ command -nargs=0 TypstFonts TypstFonts()
 command -nargs=0 TypstQFList TypstQFList()
 
 augroup typstpowershell
-  # Remove all vimrc autocommands
   autocmd!
   au BufNew <buffer> :echom "New Typst Source File"
-  if typst_pdf_viewer == ''
-      au BufWrite <buffer> :TypstWatch
-  else
-      au BufWrite <buffer> :TypstCompile
-  endif 
+  autocmd QuickFixCmdPost [^l]* cwindow
+  # if typst_pdf_viewer == ''
+    #  au BufWrite <buffer> :TypstWatch
+  #else
+  #    au BufWrite <buffer> :TypstCompile
+  # endif 
 augroup END
 
 def TypstQFList(): void
     var proj_dir = getcwd()
-    var curr_buff =  proj_dir .. "\\" .. expand("%")
-    quickfixlist = systemlist(typst_exe .. " compile --diagnostic-format 'short' " .. curr_buff)
-    if quickfixlist->len() > 0
-            call setqflist([], ' ', {'title': 'List of Errors', 'lines': quickfixlist })
-        copen
-    endif
-   
+    var curr_buff =  proj_dir .. utils.Os_Sep() .. expand("%")
+    run_psscript.Run_PsScript(powershell_version, typst_exe .. " compile --diagnostic-format 'short' " .. curr_buff)
+    copen
 enddef
 
 
 def PDFViewer(): void
-    var checkbufferpath = systemlist(plugindir  .. "\\getpathinfo.ps1 -Path " .. expand("%:p"))
+    var checkbufferpath = systemlist(powershellcommand .. " " .. plugindir  .. utils.Os_Sep() .. "getpathinfo.ps1 -Path " .. expand("%:p"))
     var directory = checkbufferpath[0]
     var filename = checkbufferpath[4]
     var error = checkbufferpath[2]
     if error == ""
-        var curr_pdf =  directory .. "\\" .. filename .. ".pdf"
+        var curr_pdf =  directory .. utils.Os_Sep() .. filename .. ".pdf"
         if typst_pdf_viewer == ''
             execute("!" .. curr_pdf)
             id = 1
@@ -103,14 +90,12 @@ def PDFViewer(): void
 enddef    
 
 def TypstCompile(): void
-    var checkbufferpath = systemlist(plugindir  .. "\\getpathinfo.ps1 -Path " .. expand("%:p"))
-    # echom checkbufferpath # list with Directory - Filename - Error
-
+    var checkbufferpath = systemlist(powershellcommand .. " " .. plugindir  .. utils.Os_Sep() .. "getpathinfo.ps1 -Path " .. expand("%:p"))
     var directory = checkbufferpath[0]
     var filename = checkbufferpath[1]
     var error = checkbufferpath[2]
     if error == ""
-        var curr_buff =  directory .. "\\" .. filename
+        var curr_buff =  directory .. utils.Os_Sep() .. filename
         job_start([typst_exe, "compile", curr_buff], {
                     \ out_cb: function('TypstOutput'),
                     \ err_cb: function('TypstError'),
@@ -123,13 +108,17 @@ enddef
 
 
 def TypstWatch(): void
-    var proj_dir = getcwd()
-    var curr_buff =  proj_dir .. "\\" .. expand("%")
-    job_start([typst_exe, "watch", curr_buff], {
-                \ out_cb: function('TypstOutput'),
-                \ err_cb: function('TypstError'),
-                \ close_cb: function('TypstClose'), 
-                \ })
+    var checkbufferpath = systemlist(powershellcommand .. " " .. plugindir  .. utils.Os_Sep() .. "getpathinfo.ps1 -Path " .. expand("%:p"))
+    var directory = checkbufferpath[0]
+    var filename = checkbufferpath[1]
+    var error = checkbufferpath[2]
+    if error == ""
+        var curr_buff =  directory .. utils.Os_Sep() .. filename
+        run_psscript.Run_PsScript(powershell_version, typst_exe .. " watch --diagnostic-format 'short' " .. curr_buff)
+    else 
+        echom error
+    endif
+
 enddef
 
 def TypstFonts(): void
@@ -140,7 +129,6 @@ enddef
 
 
 def FontsBuffer(ch: channel ): void
-    # echom msg
     execute("new" .. " __Fonts__")
     execute("setlocal buftype=nofile")
     while ch_status(ch, {'part': 'out'}) == 'buffered'
@@ -156,7 +144,7 @@ def TypstClose(ch: channel): void
                     \ })
         errom = ''
     else
-        # execute('PDFViewer()')
+        echo 'Source recompiled'
     endif
 enddef
 
