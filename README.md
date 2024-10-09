@@ -8,6 +8,8 @@ Prerequisites:
 - PowerShell available.
 - Typst binary https://github.com/typst/typst/releases
 - A PDFViewer (SumatraPDF/Evince recommended)
+- Optional Vim Lsp plugin https://github.com/yegappan/lsp and https://github.com/nvarner/typst-lsp/releases binary (save to a directory in the PATH as typst-lsp.exe) for LSP integration.
+
 
 Install TypstPowerShell:
 - Use your preferred Vim plugin manager (e.g., vim-plug).
@@ -30,6 +32,11 @@ Install TypstPowerShell:
         <pre>
         let g:powershell_version = 7 ""legacy
         g:powershell_version = 7 #vim9script
+        </pre>
+  Set Lsp binary path, if filename different form typst-lsp.exe and not in the PATH:
+        <pre>
+        let g:typst_lsp_exe = 'typst-lsp.exe' ""legacy
+        g:typst_lsp_exe = 'typst-lsp.exe' #vim9script
         </pre>
 Creating PDFs:
 - Open your Typst source code in Vim.

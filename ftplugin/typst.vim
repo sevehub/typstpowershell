@@ -15,6 +15,7 @@ import autoload "../autoload/utils.vim"
 var typst_exe = "typst.exe"
 var typst_pdf_viewer = "" # same as typst.vim plugin
 var powershell_version = 5
+var typst_lsp_exe = "typst-lsp.exe"
 
 if exists('g:powershell_version')
     powershell_version = g:powershell_version
@@ -22,6 +23,12 @@ endif
 
 if exists('g:typst_exe')
     typst_exe = g:typst_exe
+endif
+
+
+# https://github.com/nvarner/typst-lsp/releases
+if exists('g:typst_lsp_exe')
+    typst_lsp_exe = g:typst_lsp_exe
 endif
 
 if exists('g:typst_pdf_viewer')
@@ -34,7 +41,8 @@ var plugindir =  expand('<sfile>:p:h')
 var id = 0
 var errom = ""
 var typstfiles = []
-
+var template = ""
+var template_dir = getcwd()
 var watchmode = false
 
 if has('win32') || has('win64')
@@ -48,11 +56,23 @@ if has('win32') || has('win64')
     # execute("argadd " .. join(typstfiles, " "))
 endif
 
+command -nargs=0 TypstInit TypstInit()
 command -nargs=0 TypstCompile TypstCompile()
 command -nargs=0 TypstWatch TypstWatch()
 command -nargs=0 PDFViewer PDFViewer()
 command -nargs=0 TypstFonts TypstFonts()
 command -nargs=0 TypstQFList TypstQFList()
+
+
+if executable(typst_lsp_exe)
+  call LspAddServer([{
+          name: 'typst-lsp',
+          filetype: ['typst'],
+          path: typst_lsp_exe,
+          args: ['']
+      }])
+endif
+
 
 augroup typstpowershell
   autocmd!
@@ -64,6 +84,23 @@ augroup typstpowershell
   #    au BufWrite <buffer> :TypstCompile
   # endif 
 augroup END
+
+def Popup_Input_Box(prompt: string): string
+    var input = ""
+    input = input(prompt, '')
+    return input
+enddef
+
+
+def TypstInit(): void
+    var pro_tpl = ""
+    var arr = []
+    pro_tpl = Popup_Input_Box("Enter project's template: ")
+    pro_tpl = "@preview/" ..  pro_tpl
+    arr = split(pro_tpl, ':')
+    run_psscript.Run_PsScript(powershell_version, typst_exe .. " init " .. pro_tpl)
+    # echo arr[0]
+enddef
 
 def TypstQFList(): void
     var proj_dir = getcwd()
@@ -96,6 +133,7 @@ def TypstCompile(): void
     var error = checkbufferpath[2]
     if error == ""
         var curr_buff =  directory .. utils.Os_Sep() .. filename
+        echom curr_buff
         job_start([typst_exe, "compile", curr_buff], {
                     \ out_cb: function('TypstOutput'),
                     \ err_cb: function('TypstError'),
@@ -157,3 +195,4 @@ def TypstOutput(ch: channel, msg: string): void
            \ pos: 'topleft', time: 4000
            \ })
 enddef
+# vim: shiftwidth=2 softtabstop=2
