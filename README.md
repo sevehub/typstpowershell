@@ -1,9 +1,8 @@
 # Vim9Script Plugin Typst & PowerShell
 
+This Vim9Script plugin streamlines the process of compiling Typst source code into PDF files. It is primarily designed for users working in Windows PowerShell (version 5) but should also be compatible with PowerShell Core. If you encounter any problems, please open an issue.
 
-This Vim9Script plugin is designed to streamline the process of compiling Typst source code into PDF files.
-
-Prerequisites:
+## Prerequisites:
 - Vim (>9.0) installed on your system.
 - PowerShell available.
 - Typst binary https://github.com/typst/typst/releases
@@ -11,7 +10,7 @@ Prerequisites:
 - Optional Vim Lsp plugin https://github.com/yegappan/lsp and https://github.com/nvarner/typst-lsp/releases binary (save to a directory in the PATH as typst-lsp.exe) for LSP integration.
 
 
-Install TypstPowerShell:
+## Install TypstPowerShell:
 - Use your preferred Vim plugin manager (e.g., vim-plug).
 - Add the following line to your ~/.vimrc or vimrc:
         <pre>
@@ -38,21 +37,28 @@ Install TypstPowerShell:
         let g:typst_lsp_exe = 'typst-lsp.exe' ""legacy
         g:typst_lsp_exe = 'typst-lsp.exe' #vim9script
         </pre>
-Creating PDFs:
+
+
+## Create PDFs:
 - Open your Typst source code in Vim.
-- Execute the TypstCompile command (e.g., :TypstCompile) or save it.
+- Execute the TypstCompile/TypstWatch command (e.g., :TypstCompile).
 - Your PDF will be generated using Typst and previewed in your PDFViewer.
 
-Display Fonts:
+## Display Fonts:
 - Execute TypstFonts command (:TypstFonts)
 
-View Errors in a quikfix list:
+## View Errors in a quikfix list:
 - :TypstQFList
 
-Open PDFViewer:
+## Open PDFViewer:
 - :PDFViewer
 
 You can pin the PDFViwer with the keyboard shortcut CTRL-SHIFT-SPACE (Windows only).
+
+## Initialize Project
+The :TypstInit command initializes a new Typst project from the Typst universe. This command allows users to quickly set up a project with a specified template or package version. For example, using :TypstInit minimalbc:0.0.1 will create a new project based on the minimalbc template from the @preview namespace, specifically version 0.0.1. 
+
+
 
 TODO:
 

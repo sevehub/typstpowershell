@@ -1,7 +1,7 @@
 vim9script
 # Plugin:  typstpowershell  
 # Description:  Minimalist Typst Plugin for PowerShell 
-# Maintainer:  S. Tessarin https://tessarinseve.pythonanywhere.com/nws/index.htmlDone!
+# Maintainer:  S. Tessarin https://tessarinseve.pythonanywhere.com/nws/index.html
 # License: GPL3
 # Copyright (c) 2024 Seve Tessarin
 
@@ -48,12 +48,6 @@ var watchmode = false
 if has('win32') || has('win64')
     var pintotop = "start /B " .. plugindir .. "\\" .. "pintotop.exe"
     system(pintotop)
-
-    # TODO  read the current buffer and extract typst files unfinished 
-    # var getarglist =  plugindir .. "\\" .. "getarglist.ps1 -Filename " .. expand("%:p")
-    # typstfiles = systemlist(getarglist)
-    # echom typstfiles
-    # execute("argadd " .. join(typstfiles, " "))
 endif
 
 command -nargs=0 TypstInit TypstInit()
@@ -78,11 +72,6 @@ augroup typstpowershell
   autocmd!
   au BufNew <buffer> :echom "New Typst Source File"
   autocmd QuickFixCmdPost [^l]* cwindow
-  # if typst_pdf_viewer == ''
-    #  au BufWrite <buffer> :TypstWatch
-  #else
-  #    au BufWrite <buffer> :TypstCompile
-  # endif 
 augroup END
 
 def Popup_Input_Box(prompt: string): string
@@ -97,9 +86,7 @@ def TypstInit(): void
     var arr = []
     pro_tpl = Popup_Input_Box("Enter project's template: ")
     pro_tpl = "@preview/" ..  pro_tpl
-    arr = split(pro_tpl, ':')
     run_psscript.Run_PsScript(powershell_version, typst_exe .. " init " .. pro_tpl)
-    # echo arr[0]
 enddef
 
 def TypstQFList(): void
