@@ -1,20 +1,15 @@
-" Vim syntax file
-" Language: Typst
-" Maintainer: Kaj Munhoz Arfvidsson
-" Latest Revision: Apr 2023
+vim9script
 
-if exists("b:current_syntax")
-  finish
-endif
+# Vim syntax file
+# Language: Typst
+# Latest Revision: Jan 2025
 
 syntax sync fromstart
 syntax spell toplevel
 
-" Common {{{1
 syntax cluster typstCommon
     \ contains=@typstComment
 
-" Common > Comment {{{2
 syntax cluster typstComment
     \ contains=typstCommentBlock,typstCommentLine
 syntax match typstCommentBlock
@@ -25,10 +20,9 @@ syntax match typstCommentLine
     \ contains=typstCommentTodo,@Spell
 syntax keyword typstCommentTodo
     \ contained
-    \ TODO FIXME XXX TBD
+    \ TODO 
 
 
-" Code {{{1
 syntax cluster typstCode
     \ contains=@typstCommon
             \ ,@typstCodeKeywords
@@ -37,7 +31,6 @@ syntax cluster typstCode
             \ ,@typstCodeFunctions
             \ ,@typstCodeParens
 
-" Code > Keywords {{{2
 syntax cluster typstCodeKeywords
     \ contains=typstCodeConditional
             \ ,typstCodeRepeat
@@ -57,7 +50,6 @@ syntax region typstCodeStatement
     \ matchgroup=typstCodeStatementWord start=/\v(let|set|show|import|include)>-@!/ end=/\v%(;|$)/
     \ contains=@typstCode
 
-" Code > Constants {{{2
 syntax cluster typstCodeConstants
     \ contains=typstCodeConstant
             \ ,typstCodeNumberInteger
@@ -93,7 +85,6 @@ syntax region typstCodeString
     \ start=/"/ skip=/\v\\\\|\\"/ end=/"/
     \ contains=@Spell
 
-" Code > Identifiers- {{{2
 syntax cluster typstCodeIdentifiers
     \ contains=typstCodeIdentifier
             \ ,typstCodeFieldAccess
@@ -105,7 +96,6 @@ syntax match typstCodeFieldAccess
     \ /\v\K\k*%(-+\k+)*>-@!(<%(let|set|show|import|include))@<!\.[\[\(]@!/
     \ nextgroup=typstCodeFieldAccess,typstCodeFunction
 
-" Code > Functions {{{2
 syntax cluster typstCodeFunctions
     \ contains=typstCodeFunction
 syntax match typstCodeFunction
@@ -117,7 +107,6 @@ syntax match typstCodeFunctionArgument
     \ /\v%(.{-}%(\(.{-}\)|\[.{-}\]|\{.{-}\}))*/ transparent
     \ contains=@typstCode
 
-" Code > Parens {{{2
 syntax cluster typstCodeParens
     \ contains=typstCodeParen
             \ ,typstCodeBrace
@@ -141,7 +130,6 @@ syntax region typstCodeDollar
     \ contains=@typstMath
 
 
-" Hashtag {{{1
 syntax cluster typstHashtag
     \ contains=@typstHashtagKeywords
             \ ,@typstHashtagConstants
@@ -149,7 +137,6 @@ syntax cluster typstHashtag
             \ ,@typstHashtagFunctions
             \ ,@typstHashtagParens
 
-" Hashtag > Keywords {{{2
 syntax cluster typstHashtagKeywords
     \ contains=typstHashtagConditional
             \ ,typstHashtagRepeat
@@ -168,13 +155,11 @@ syntax region typstHashtagStatement
     \ matchgroup=typstHashtagStatementWord start=/\v#(let|set|show|import|include)>-@!/ end=/\v%(;|$)/
     \ contains=@typstCode
 
-" Hashtag > Constants {{{2
 syntax cluster typstHashtagConstants
     \ contains=typstHashtagConstant
 syntax match typstHashtagConstant
     \ /\v#(none|auto|true|false)>-@!/
 
-" Hashtag > Identifiers {{{2
 syntax cluster typstHashtagIdentifiers
     \ contains=typstHashtagIdentifier
             \ ,typstHashtagFieldAccess
@@ -184,14 +169,12 @@ syntax match typstHashtagFieldAccess
     \ /\v#\K\k*%(-+\k+)*>-@!(<%(let|set|show|import|include|if|while|for|return))@<!\.[\[\(]@!/
     \ nextgroup=typstCodeFieldAccess,typstCodeFunction
 
-" Hashtag > Functions {{{2
 syntax cluster typstHashtagFunctions
     \ contains=typstHashtagFunction
 syntax match typstHashtagFunction
     \ /\v#\K\k*%(-+\k+)*[\(\[]@=/
     \ nextgroup=typstCodeFunctionArgument
 
-" Hashtag > Parens {{{2
 syntax cluster typstHashtagParens
     \ contains=typstHashtagParen
             \ ,typstHashtagBrace
@@ -211,7 +194,6 @@ syntax region typstHashtagDollar
     \ contains=@typstMath
 
 
-" Markup {{{1
 syntax cluster typstMarkup
     \ contains=@typstCommon
             \ ,@Spell
@@ -219,7 +201,6 @@ syntax cluster typstMarkup
             \ ,@typstMarkupText
             \ ,@typstMarkupParens
 
-" Markup > Text {{{2
 syntax cluster typstMarkupText
     \ contains=typstMarkupRawInline
             \ ,typstMarkupRawBlock
@@ -267,8 +248,6 @@ syntax match typstMarkupEllipsis
     \ /\.\.\./
 syntax match typstMarkupTermList
     \ #\v^\s*\/\s+[^:]*:#
-
-" Markup > Parens {{{2
 syntax cluster typstMarkupParens
     \ contains=typstMarkupDollar
 syntax region typstMarkupDollar
@@ -276,15 +255,12 @@ syntax region typstMarkupDollar
     \ contains=@typstMath
 
 
-" Math {{{1
 syntax cluster typstMath
     \ contains=@typstCommon
             \ ,@typstHashtag
 
 
-" Highlighting {{{1
 
-" Highlighting > Linked groups {{{2
 highlight default link typstCommentBlock            Comment
 highlight default link typstCommentLine             Comment
 highlight default link typstCommentTodo             Todo
@@ -333,7 +309,6 @@ highlight default link typstMarkupEllipsis          Structure
 highlight default link typstMarkupTermList          Structure
 highlight default link typstMarkupDollar            Noise
 
-" Highlighting > Custom Styling {{{2
 highlight default typstMarkupHeading                    term=underline,bold     cterm=underline,bold    gui=underline,bold
 highlight default typstMarkupBold                       term=bold               cterm=bold              gui=bold
 highlight default typstMarkupItalic                     term=italic             cterm=italic            gui=italic
@@ -341,8 +316,5 @@ highlight default typstMarkupItalic                     term=italic             
 highlight default link typstMarkupBoldDelimiter         typstMarkupBold
 highlight default link typstMarkupItalicDelimiter       typstMarkupItalic
 
-" }}}1
 
-let b:current_syntax = "typst"
 
-" vim: foldlevel=0 tabstop=8 shiftwidth=4 softtabstop=4 expandtab

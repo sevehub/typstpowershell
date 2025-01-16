@@ -15,7 +15,12 @@ import autoload "../autoload/utils.vim"
 var typst_exe = "typst.exe"
 var typst_pdf_viewer = "" # same as typst.vim plugin
 var powershell_version = 5
-var typst_lsp_exe = "typst-lsp.exe"
+var typst_lsp_exe = "" 
+
+# Use tinymist default LSP
+if executable("tinymist.exe")
+  typst_lsp_exe = "tinymist.exe"
+endif 
 
 if exists('g:powershell_version')
     powershell_version = g:powershell_version
@@ -25,8 +30,6 @@ if exists('g:typst_exe')
     typst_exe = g:typst_exe
 endif
 
-
-# https://github.com/nvarner/typst-lsp/releases
 if exists('g:typst_lsp_exe')
     typst_lsp_exe = g:typst_lsp_exe
 endif
@@ -54,18 +57,29 @@ command -nargs=0 TypstInit TypstInit()
 command -nargs=0 TypstCompile TypstCompile()
 command -nargs=0 TypstWatch TypstWatch()
 command -nargs=0 PDFViewer PDFViewer()
+command -nargs=0 TypstPreview TypstPreview()
 command -nargs=0 TypstFonts TypstFonts()
 command -nargs=0 TypstQFList TypstQFList()
+command -nargs=0 TypstInstallTM TypstInstallTM()
 
-
-if executable(typst_lsp_exe)
+if typst_lsp_exe == "tinymist.exe"
   call LspAddServer([{
           name: 'typst-lsp',
           filetype: ['typst'],
           path: typst_lsp_exe,
-          args: ['']
+          args: ['lsp']
       }])
-endif
+
+else
+  if executable(typst_lsp_exe)
+    call LspAddServer([{
+            name: 'typst-lsp',
+            filetype: ['typst'],
+            path: typst_lsp_exe,
+            args: ['']
+        }])
+  endif
+endif 
 
 
 augroup typstpowershell
@@ -87,6 +101,12 @@ def TypstInit(): void
     pro_tpl = Popup_Input_Box("Enter project's template: ")
     pro_tpl = "@preview/" ..  pro_tpl
     run_psscript.Run_PsScript(powershell_version, typst_exe .. " init " .. pro_tpl)
+enddef
+
+# in c:\\Users\\user\\.local\\bin
+def TypstInstallTM(): void
+  var cmd = "irm https://github.com/Myriad-Dreamin/tinymist/releases/download/v0.12.18/tinymist-installer.ps1 | iex"
+  run_psscript.Run_PsScript(powershell_version, cmd)
 enddef
 
 def TypstQFList(): void
@@ -120,7 +140,6 @@ def TypstCompile(): void
     var error = checkbufferpath[2]
     if error == ""
         var curr_buff =  directory .. utils.Os_Sep() .. filename
-        echom curr_buff
         job_start([typst_exe, "compile", curr_buff], {
                     \ out_cb: function('TypstOutput'),
                     \ err_cb: function('TypstError'),
@@ -144,6 +163,22 @@ def TypstWatch(): void
         echom error
     endif
 
+enddef
+
+def TypstPreview(): void
+    var checkbufferpath = systemlist(powershellcommand .. " " .. plugindir  .. utils.Os_Sep() .. "getpathinfo.ps1 -Path " .. expand("%:p"))
+    var directory = checkbufferpath[0]
+    var filename = checkbufferpath[1]
+    var error = checkbufferpath[2]
+    if error == ""
+        var curr_buff =  directory .. utils.Os_Sep() .. filename
+        job_start([typst_lsp_exe, "preview", curr_buff], {
+                    \ out_cb: function('TypstOutput'),
+                    \ err_cb: function('TypstError'),
+                    \ })
+    else 
+        echom error
+    endif
 enddef
 
 def TypstFonts(): void
@@ -182,4 +217,6 @@ def TypstOutput(ch: channel, msg: string): void
            \ pos: 'topleft', time: 4000
            \ })
 enddef
+
+
 # vim: shiftwidth=2 softtabstop=2

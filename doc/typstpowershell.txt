@@ -50,7 +50,7 @@ Set the path to the pdfviewer
 ==============================================================================
 4. Mappings                                                  *typstpowershellMappings*
 
-
+leader fs Forward Search (sumatraPDF viewer)
 
 
 ==============================================================================
