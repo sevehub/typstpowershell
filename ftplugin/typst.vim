@@ -3,7 +3,7 @@ vim9script
 # Description:  Minimalist Typst Plugin for PowerShell 
 # Maintainer:  S. Tessarin https://tessarinseve.pythonanywhere.com/nws/index.html
 # License: GPL3
-# Copyright (c) 2024 Seve Tessarin
+# Copyright (c) 2024-2025 Seve Tessarin
 
 if v:version < 900
     finish
@@ -12,6 +12,8 @@ endif
 import autoload "../autoload/run_psscript.vim"
 import autoload "../autoload/utils.vim"
 
+
+setlocal autoread
 var typst_exe = "typst.exe"
 var typst_pdf_viewer = "" # same as typst.vim plugin
 var powershell_version = 5
@@ -67,9 +69,13 @@ if typst_lsp_exe == "tinymist.exe"
           name: 'typst-lsp',
           filetype: ['typst'],
           path: typst_lsp_exe,
+          initializationOptions: {
+          documentFormatting: v:true
+          },
           args: ['lsp']
       }])
-
+  call LspOptionsSet({ autoHighlight: v:true, useQuickfixForLocations: v:true,
+  semanticHighlight: v:true, snippetSupport: v:true  })
 else
   if executable(typst_lsp_exe)
     call LspAddServer([{
@@ -86,7 +92,20 @@ augroup typstpowershell
   autocmd!
   au BufNew <buffer> :echom "New Typst Source File"
   autocmd QuickFixCmdPost [^l]* cwindow
+  autocmd BufWritePost *.typ call FormatTypFile()
 augroup END
+
+
+def FormatTypFile(): void 
+    # Get the current buffer's filename
+    var proj_dir = getcwd()
+    var curr_buff =  proj_dir .. utils.Os_Sep() .. expand("%")
+    # Run the typstyle.exe -i command to format the file
+    var cmd = 'typstyle.exe -i ' .. curr_buff
+    run_psscript.Run_PsScript(powershell_version, cmd)
+enddef
+
+
 
 def Popup_Input_Box(prompt: string): string
     var input = ""
