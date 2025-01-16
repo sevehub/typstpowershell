@@ -7,7 +7,7 @@ This Vim9Script plugin streamlines the process of compiling Typst source code in
 - PowerShell available.
 - Typst binary https://github.com/typst/typst/releases 
 - A PDFViewer (SumatraPDF/Evince recommended)
-- Optional Vim Lsp plugin https://github.com/yegappan/lsp and https://github.com/nvarner/typst-lsp/releases binary. Tinymist is the default LSP server and should be included to your PowerShell PATH.  If you are using a different LSP server, set the global variable *typst_lsp_exe* to the binary's filename. 
+- Optional Vim Lsp plugin https://github.com/yegappan/lsp. Tinymist is the default LSP server and should be included to your PowerShell PATH.  If you are using a different LSP server, set the global variable *typst_lsp_exe* to the binary's filename. 
 
 
 ## Install TypstPowerShell:
@@ -52,6 +52,7 @@ This Vim9Script plugin streamlines the process of compiling Typst source code in
 
 ## Open PDFViewer:
 - :PDFViewer
+You can pin the PDFViwer with the keyboard shortcut CTRL-SHIFT-SPACE (Windows only).
 
 ## Preview Current Buffer (tinymist webserver, experimental )
 - :TypstPreview
@@ -59,7 +60,6 @@ This Vim9Script plugin streamlines the process of compiling Typst source code in
 ## Install TinyMist:
 - :TypstInstallTM
 
-You can pin the PDFViwer with the keyboard shortcut CTRL-SHIFT-SPACE (Windows only).
 
 ## Initialize Project
 The :TypstInit command initializes a new Typst project from the Typst universe. This command allows users to quickly set up a project with a specified template or package version. For example, using :TypstInit minimalbc:0.0.1 will create a new project based on the minimalbc template from the @preview namespace, specifically version 0.0.1. 
