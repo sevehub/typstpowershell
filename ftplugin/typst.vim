@@ -11,13 +11,16 @@ endif
 
 import autoload "../autoload/run_psscript.vim"
 import autoload "../autoload/utils.vim"
-
-
 setlocal autoread
 var typst_exe = "typst.exe"
 var typst_pdf_viewer = "" # same as typst.vim plugin
 var powershell_version = 5
 var typst_lsp_exe = "" 
+var typstpowershell_enable_hotkeys = 0
+
+
+var powershellcommand = run_psscript.Create_PS_Command(powershell_version)
+var plugindir =  expand('<sfile>:p:h')
 
 # Use tinymist default LSP
 if executable("tinymist.exe")
@@ -36,13 +39,17 @@ if exists('g:typst_lsp_exe')
     typst_lsp_exe = g:typst_lsp_exe
 endif
 
+if exists('g:typstpowershell_enable_hotkeys')
+    typstpowershell_enable_hotkeys = g:typstpowershell_enable_hotkeys
+endif
 if exists('g:typst_pdf_viewer')
    typst_pdf_viewer = g:typst_pdf_viewer
+   # create .pdfviewer 
+   var cmd = "Set-Content -Path " .. plugindir .. "\\.pdfviewer" .. " -Value " ..  typst_pdf_viewer
+   run_psscript.Run_PsScript(powershell_version, cmd)
 endif
 
-var powershellcommand = run_psscript.Create_PS_Command(powershell_version)
 
-var plugindir =  expand('<sfile>:p:h')
 var id = 0
 var errom = ""
 var typstfiles = []
@@ -51,8 +58,10 @@ var template_dir = getcwd()
 var watchmode = false
 
 if has('win32') || has('win64')
+  if typstpowershell_enable_hotkeys
     var pintotop = "start /B " .. plugindir .. "\\" .. "pintotop.exe"
     system(pintotop)
+  endif
 endif
 
 command -nargs=0 TypstInit TypstInit()

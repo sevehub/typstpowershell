@@ -1,9 +1,9 @@
 # Vim9Script Plugin Typst & PowerShell
 
-This Vim9Script plugin streamlines the process of compiling Typst source code into PDF files. It is primarily designed for users working in Windows PowerShell (version 5) but should also be compatible with PowerShell Core. If you encounter any problems, please open an issue.
+This Vim9Script plugin streamlines the process of compiling Typst source code into PDF files. It is primarily designed for a narrow set of users working in Windows PowerShell (version 5) and using VIM plus the LSP plugin. It should, partially at least, be compatible also with PowerShell Core. If you encounter any problems, please open an issue.
 
 ## Prerequisites:
-- Vim (>9.0) installed on your system.
+- Vim (>9.0) installed on your system, optional AutoHotKey v.1.
 - PowerShell available.
 - Typst binary https://github.com/typst/typst/releases 
 - A PDFViewer (SumatraPDF/Evince recommended)
@@ -11,7 +11,7 @@ This Vim9Script plugin streamlines the process of compiling Typst source code in
 
 
 ## Install TypstPowerShell:
-- Use your preferred Vim plugin manager (e.g., vim-plug).
+- Use Vim plugin manager - vim-plug.
 - Add the following line to your ~/.vimrc or vimrc:
         <pre>
         Plug 'sevehub/typstpowershell' 
@@ -52,6 +52,11 @@ This Vim9Script plugin streamlines the process of compiling Typst source code in
 
 ## Open PDFViewer:
 - :PDFViewer
+On Windows only this plugin optionally provides a set of hotkeys (not enabled by default).
+<pre>
+        let g:typstpowershell_enable_hotkeys = 1 ""legacy
+        g:typstpowershell_enable_hotkeys = 1  #vim9script
+</pre>
 You can pin the PDFViwer with the keyboard shortcut CTRL-SHIFT-SPACE (Windows only).
 
 ## Preview Current Buffer (tinymist webserver, experimental )
@@ -70,9 +75,8 @@ TODO:
 
 []  Documentation
 []  Complete Vim-Doc
+[]  Hotkeys
 
 ### PRs welcomed
 
-
-# Credits
-- Syntax highlighting from  (kaarmu/typst.vim)[https://github.com/kaarmu/typst.vim]
+- Syntax highlighting from lsp semantic syntax

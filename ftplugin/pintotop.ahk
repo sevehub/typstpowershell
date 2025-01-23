@@ -27,8 +27,67 @@
 ; partial match of window title
 SetTitleMatchMode, 2
 
-; pin to the top CTRL+SHIFT+SPACE
-^+SPACE:: 
+; Set the file path
+filePath := ".pdfviewer"
+
+; Check if the file exists
+if FileExist(filePath) {
+    ; Read the file content and store it in the pdfEditor variable
+    FileRead, pdfEditor, %filePath%
+} else {
+    ; If the file doesn't exist, set the pdfEditor variable to the Windows default PDF viewer
+    pdfEditor := "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+
+}
+
+; Run a PowerShell command
+RunPowershellCommand(command) {
+    shell := ComObjCreate("WScript.Shell")
+    exec := shell.Exec("powershell.exe  -WindowStyle Hidden -Command """ . command . """")
+    ; Close the stdin stream to prevent the window from waiting for input
+    exec.StdIn.Close()
+}
+
+
+PDFViewerFocus(pdfEditor) {
+        WinGet, List, List 
+        Loop % List  
+        {
+            WinGet, EXENAME, ProcessName, % "ahk_id " List%A_Index%  
+            ;WinGet, MINMAX , MinMax, % "ahk_id " List%A_Index%  
+
+                if InStr(pdfEditor, EXENAME)
+                {
+                WinRestore, % "ahk_id " List%A_Index%  ;restore the window
+                }
+        }
+}
+
+;CTRL+ALT+WIN+Up bring the window to focus
+^!#Up::
+    PDFViewerFocus(pdfEditor)
+    ; Send, #{%taskbarPos%}
+return
+
+^!#Down::
+    PDFViewerFocus(pdfEditor)
+    WinMinimize, A
+return
+
+
+; Hotkey to force close the editor window
+^#!q::
+    PDFViewerFocus(pdfEditor)
+    Send, !{F4}
+return
+
+;CTRL+ALT+WIN+P open the pdfviewer
+^!#p::
+    RunPowershellCommand(pdfEditor)
+return
+
+; pin to the top CTRL+ALT+WIN+SPACE
+^!#SPACE:: 
 gosub, PintoTop
 return
 
