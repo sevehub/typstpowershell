@@ -36,7 +36,7 @@ if FileExist(filePath) {
     FileRead, pdfEditor, %filePath%
 } else {
     ; If the file doesn't exist, set the pdfEditor variable to the Windows default PDF viewer
-    pdfEditor := "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+    pdfEditor := "msedge.exe"
 
 }
 
@@ -62,6 +62,11 @@ PDFViewerFocus(pdfEditor) {
                 }
         }
 }
+
+
+#~::
+    Run, https://tessarinseve.pythonanywhere.com
+return
 
 ;CTRL+ALT+WIN+Up bring the window to focus
 ^!#Up::

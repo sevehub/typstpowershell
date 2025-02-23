@@ -1,4 +1,12 @@
 vim9script
+
+import autoload "../autoload/run_psscript.vim"
+import autoload "../autoload/utils.vim"
+
+var powershell_version = 5
+if exists('g:powershell_version')
+    powershell_version = g:powershell_version
+endif
 augroup typst
         autocmd!
         nnoremap <buffer> <leader>fs <Scriptcmd>ForwardSearch()<cr>
@@ -15,5 +23,5 @@ augroup END
 
 def ForwardSearch()
   var filename_root = expand('%:p:r')
-  silent system($'{g:typst_pdf_viewer} -forward-search {filename_root}.typ {line(".")} {filename_root}.pdf')
+  run_psscript.Run_PsScript(powershell_version, $'{g:typst_pdf_viewer} -forward-search {filename_root}.typ {line(".")} {filename_root}.pdf')
 enddef
