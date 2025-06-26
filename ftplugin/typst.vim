@@ -72,7 +72,8 @@ command -nargs=0 TypstPreview TypstPreview()
 command -nargs=0 TypstFonts TypstFonts()
 command -nargs=0 TypstQFList TypstQFList()
 command -nargs=0 TypstInstallTM TypstInstallTM()
-
+command -nargs=0 TypstCompileToPNG TypstCompileToPNG()
+command! -nargs=1 ZKnew call utils.ZK_new(<f-args>)
 if typst_lsp_exe == "tinymist.exe"
   call LspAddServer([{
           name: 'typst-lsp',
@@ -177,6 +178,25 @@ def TypstCompile(): void
         echom error
     endif
 enddef
+
+
+def TypstCompileToPNG(): void
+    var checkbufferpath = systemlist(powershellcommand .. " " .. plugindir  .. utils.Os_Sep() .. "getpathinfo.ps1 -Path " .. expand("%:p"))
+    var directory = checkbufferpath[0]
+    var filename = checkbufferpath[1]
+    var error = checkbufferpath[2]
+    if error == ""
+        var curr_buff =  directory .. utils.Os_Sep() .. filename
+        job_start([typst_exe, "compile", "-f", "png", curr_buff], {
+                    \ out_cb: function('TypstOutput'),
+                    \ err_cb: function('TypstError'),
+                    \ close_cb: function('TypstClose'), 
+                    \ })
+    else 
+        echom error
+    endif
+enddef
+
 
 
 def TypstWatch(): void
