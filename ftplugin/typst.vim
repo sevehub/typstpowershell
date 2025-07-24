@@ -184,10 +184,11 @@ def TypstCompileToPNG(): void
     var checkbufferpath = systemlist(powershellcommand .. " " .. plugindir  .. utils.Os_Sep() .. "getpathinfo.ps1 -Path " .. expand("%:p"))
     var directory = checkbufferpath[0]
     var filename = checkbufferpath[1]
+    var raw_filename = fnamemodify(filename, ':r')
     var error = checkbufferpath[2]
     if error == ""
-        var curr_buff =  directory .. utils.Os_Sep() .. filename
-        job_start([typst_exe, "compile", "-f", "png", curr_buff], {
+        var curr_buff =  directory .. utils.Os_Sep() .. filename 
+        job_start([typst_exe, "compile", "-f", "png", curr_buff, raw_filename .. "_{0p}of{t}" .. ".png"], {
                     \ out_cb: function('TypstOutput'),
                     \ err_cb: function('TypstError'),
                     \ close_cb: function('TypstClose'), 
