@@ -12,6 +12,7 @@ endif
 import autoload "../autoload/run_psscript.vim"
 import autoload "../autoload/utils.vim"
 setlocal autoread
+
 var typst_exe = "typst.exe"
 var typst_pdf_viewer = "" # same as typst.vim plugin
 var powershell_version = 5
@@ -74,6 +75,7 @@ command -nargs=0 TypstQFList TypstQFList()
 command -nargs=0 TypstInstallTM TypstInstallTM()
 command -nargs=0 TypstCompileToPNG TypstCompileToPNG()
 command! -nargs=1 ZKnew call utils.ZK_new(<f-args>)
+
 if typst_lsp_exe == "tinymist.exe"
   call LspAddServer([{
           name: 'typst-lsp',
@@ -153,6 +155,11 @@ def PDFViewer(): void
     var error = checkbufferpath[2]
     if error == ""
         var curr_pdf =  directory .. utils.Os_Sep() .. filename .. ".pdf"
+        if !filereadable(curr_pdf)
+            echo "Unable to open " .. curr_pdf 
+            return
+        endif
+
         if typst_pdf_viewer == ''
             execute("!" .. curr_pdf)
             id = 1

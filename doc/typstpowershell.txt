@@ -18,6 +18,7 @@ Minimalist filetype plugin which facilitates compiling typst source files from a
 Requirements: VIM => 9.0
 
 
+
 ==============================================================================
 2. Commands					*typstpowershellCommands*
 
@@ -30,8 +31,18 @@ Compile the current buffer to pdf.
 ------------------------------------------------------------------------------
 2.2 :TypstWatch
 *:TypstWatch*
+Watches an input file and recompiles on changes.
 
+------------------------------------------------------------------------------
+2.3 :PDFViewer
+:PDFViewer
+Open the compiled PDF of the buffer in the default Viewer.
 
+------------------------------------------------------------------------------
+2.4 :TypstFonts
+:TypstFonts
+
+Show available fonts in a scratch buffer.
 
 ==============================================================================
 3. Configuration					*typstpowershellConfig*
@@ -42,10 +53,14 @@ Compile the current buffer to pdf.
 Set the path to typst.exe command line tool.
 
 ------------------------------------------------------------------------------
-3.2 g:pdf_viewer =  "C:\path\to\pdfviewer.pdf"         *g:pdf_viewer*
+3.2 g:pdf_viewer =  "C:\path\to\pdfviewer.pdf"             *g:pdf_viewer*
 
 Set the path to the pdfviewer
 
+------------------------------------------------------------------------------
+3.2 g:powershell_version = 5           			*g:powershell_version*
+
+Set to 7 with PowerShell Core. Default 5
 
 ==============================================================================
 4. Mappings					*typstpowershellMappings*
