@@ -60,8 +60,8 @@ var watchmode = false
 
 if has('win32') || has('win64')
   if typstpowershell_enable_hotkeys
-    var pintotop = "start /B " .. plugindir .. "\\" .. "pintotop.exe"
-    system(pintotop)
+    var pintotop = plugindir .. "\\" .. "pintotop.exe"
+    job_start([pintotop])
   endif
 endif
 
