@@ -8,7 +8,6 @@ vim9script
 if v:version < 900
     finish
 endif
-
 import autoload "../autoload/run_psscript.vim"
 import autoload "../autoload/utils.vim"
 setlocal autoread
@@ -17,7 +16,7 @@ var typst_exe = "typst.exe"
 var typst_pdf_viewer = "" # same as typst.vim plugin
 var powershell_version = 5
 var typst_lsp_exe = "" 
-var typstpowershell_enable_hotkeys = 0
+var typstpowershell_enable_hotkeys = false
 
 
 var powershellcommand = run_psscript.Create_PS_Command(powershell_version)
@@ -43,11 +42,16 @@ endif
 if exists('g:typstpowershell_enable_hotkeys')
     typstpowershell_enable_hotkeys = g:typstpowershell_enable_hotkeys
 endif
+
 if exists('g:typst_pdf_viewer')
    typst_pdf_viewer = g:typst_pdf_viewer
    # create .pdfviewer 
    var cmd = "Set-Content -Path " .. plugindir .. "\\.pdfviewer" .. " -Value " ..  typst_pdf_viewer
    run_psscript.Run_PsScript(powershell_version, cmd)
+endif
+
+if !executable(typst_exe)
+  throw "Required '" .. typst_exe .. "' not found.  
 endif
 
 
@@ -149,7 +153,9 @@ enddef
 
 
 def PDFViewer(): void
+
     var checkbufferpath = systemlist(powershellcommand .. " " .. plugindir  .. utils.Os_Sep() .. "getpathinfo.ps1 -Path " .. expand("%:p"))
+    ->map((_, v) => trim(v, "\r", 2))
     var directory = checkbufferpath[0]
     var filename = checkbufferpath[4]
     var error = checkbufferpath[2]
@@ -170,7 +176,9 @@ def PDFViewer(): void
 enddef    
 
 def TypstCompile(): void
-    var checkbufferpath = systemlist(powershellcommand .. " " .. plugindir  .. utils.Os_Sep() .. "getpathinfo.ps1 -Path " .. expand("%:p"))
+var checkbufferpath = systemlist(powershellcommand .. " " .. plugindir .. utils.Os_Sep() .. "getpathinfo.ps1 -Path " .. expand("%:p"))
+    ->map((_, v) => trim(v, "\r", 2))
+    echom checkbufferpath
     var directory = checkbufferpath[0]
     var filename = checkbufferpath[1]
     var error = checkbufferpath[2]
@@ -182,13 +190,14 @@ def TypstCompile(): void
                     \ close_cb: function('TypstClose'), 
                     \ })
     else 
-        echom error
+        throw error
     endif
 enddef
 
 
 def TypstCompileToPNG(): void
     var checkbufferpath = systemlist(powershellcommand .. " " .. plugindir  .. utils.Os_Sep() .. "getpathinfo.ps1 -Path " .. expand("%:p"))
+        ->map((_, v) => trim(v, "\r", 2))
     var directory = checkbufferpath[0]
     var filename = checkbufferpath[1]
     var raw_filename = fnamemodify(filename, ':r')
@@ -209,6 +218,7 @@ enddef
 
 def TypstWatch(): void
     var checkbufferpath = systemlist(powershellcommand .. " " .. plugindir  .. utils.Os_Sep() .. "getpathinfo.ps1 -Path " .. expand("%:p"))
+        ->map((_, v) => trim(v, "\r", 2))
     var directory = checkbufferpath[0]
     var filename = checkbufferpath[1]
     var error = checkbufferpath[2]
@@ -223,6 +233,7 @@ enddef
 
 def TypstPreview(): void
     var checkbufferpath = systemlist(powershellcommand .. " " .. plugindir  .. utils.Os_Sep() .. "getpathinfo.ps1 -Path " .. expand("%:p"))
+    ->map((_, v) => trim(v, "\r", 2))
     var directory = checkbufferpath[0]
     var filename = checkbufferpath[1]
     var error = checkbufferpath[2]

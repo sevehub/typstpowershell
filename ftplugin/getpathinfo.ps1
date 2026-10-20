@@ -36,8 +36,14 @@ function Get-PathInfo {
 
 # Call the function with the provided argument
 $pathInfo = Get-PathInfo -Path $Path
-Write-Host "$($pathInfo.Directory)"
-write-host "$($pathinfo.Filename)"
-write-host "$($pathinfo.ErrorPath)"
-write-host "$($pathinfo.Extension)"
-write-host "$($pathinfo.FilenameWithoutExtension)"
+$out = @(
+    $pathInfo.Directory
+    $pathInfo.Filename
+    $pathInfo.ErrorPath
+    $pathInfo.Extension
+    $pathInfo.FilenameWithoutExtension
+) -join "`n"
+
+[Console]::Out.Write($out + "`n")
+
+
