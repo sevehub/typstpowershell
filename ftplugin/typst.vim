@@ -178,7 +178,6 @@ enddef
 def TypstCompile(): void
 var checkbufferpath = systemlist(powershellcommand .. " " .. plugindir .. utils.Os_Sep() .. "getpathinfo.ps1 -Path " .. expand("%:p"))
     ->map((_, v) => trim(v, "\r", 2))
-    echom checkbufferpath
     var directory = checkbufferpath[0]
     var filename = checkbufferpath[1]
     var error = checkbufferpath[2]
